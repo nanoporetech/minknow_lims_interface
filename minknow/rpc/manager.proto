@@ -1,0 +1,103 @@
+syntax="proto3";
+
+import "minknow/rpc/instance.proto";
+
+package ont.rpc.manager;
+
+service ManagerService {
+    // List all devices attached to this machine.
+    //
+    // Devices will be in 1 of 3 states: active, pending, inactive. Will provide port information
+    // for any devices that are active
+    rpc list_devices (ListDevicesRequest) returns (ListDevicesResponse) {}
+
+    // Current version information includes:
+    // - Minknow version
+    // - Protocols version
+    // - Distribution version
+    // - Guppy version
+    //
+    // See also: instance.get_version_info which provides some similar information on a per instance basis.
+    // Since 3.3
+    rpc get_version_info (GetVersionInfoRequest) returns (GetVersionInfoResponse) {}
+}
+
+message ListDevicesRequest {
+
+}
+
+message ListDevicesResponse {
+    message RpcPorts {
+        // Used for the old style of rpc using json
+        //
+        // Deprecated, as new rpc's are not being added to this service
+        uint32 jsonrpc = 1;
+
+        // Connects to ws_longpoll process and provides engine state updates
+        //
+        // Deprecated, as minknow is phasing out public access to engine states
+        uint32 json_websocket = 2; // Deprecated
+
+        // Secure connection to the grpc service over TLS
+        uint32 secure = 3;
+
+        // Direct connection to the (insecure) grpc connection. You would connect this via the method 
+        // described in the grpc documentation for your language.
+        //
+        // This is the "real" grpc port in that in connects directly to the grpc server. Most connections from python
+        // and other non-web languages should use this port
+        uint32 insecure_grpc = 4;
+
+        // Provides a HTTP/1.1 interface to the grpc connection. Intended for connecting with the browser over javascript
+        // https://github.com/improbable-eng/grpc-web
+        uint32 insecure_web = 5;
+    }
+    
+    message ActiveDevice {
+        string name = 1;
+        RpcPorts ports = 2;
+    }
+
+    // Devices that haven't been started
+    repeated string inactive = 1;
+
+    // Devices that are in the process of being started. A call to stop this device will not work until it has fully started
+    repeated string pending = 2;
+
+    // Devices that have started, along with their port information
+    repeated ActiveDevice active = 3;
+}
+
+message GetVersionInfoRequest {
+    
+}
+
+message GetVersionInfoResponse {
+
+    // What minknow version is installed. Split into major, minor and patch versions
+    // Also includes the full version as a string, which contain the major, minor and patch numbers
+    // as well as if the version is pre-release version (-pre), whether it is a release candidate (-rc#)
+    // or whether it is a variant version (i.e. for conferences) (-variant). For non-release builds it also 
+    // includes the hash of the commit it is based on, and whether the working copy is different from that has (-dirty)
+    instance.GetVersionInfoResponse.MinknowVersion minknow = 1;
+
+    // The protocols version specifies what version of bream is installed.
+    // By default is set to '0.0.0.0', but will otherwise be set to {minknow-version}.{patch}
+    string protocols = 2;
+
+    // Describes the distribution that this MinKNOW installation is part of, ususally
+    // this will be the Metapackage version number/identity, this will be "unknown"
+    // if the distribution-version hasn't been set. This information is also communicated
+    // in the Manager's DaemonMessage in daemon.proto
+    string distribution_version = 3;
+
+    // Indicates if the MinKNOW distribution including components such as Bream
+    // are stable, unstable or have been modified.
+    instance.GetVersionInfoResponse.DistributionStatus distribution_status = 4;
+
+    // Version of guppy MinKNOW was packaged against.
+    string guppy_build_version = 5;
+
+    // Version of guppy MinKNOW running with.
+    string guppy_connected_version = 6;
+}
