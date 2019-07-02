@@ -109,9 +109,10 @@ message GetDeviceInfoRequest {}
 message GetDeviceInfoResponse {
     enum DeviceType {
         MINION = 0;
-        PROMETHION = 1;
+        PROMETHION = 1; // Deprecated - will never be returned by minknow
         GRIDION = 2;
         PROMETHION_BETA = 3;
+        MINION_MK1C = 4;
     }
 
     // A unique identifier for the device.
