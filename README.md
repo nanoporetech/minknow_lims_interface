@@ -1,4 +1,11 @@
-![.](docs/ONT_logo.png "Oxford Nanopore Technologies")
+![.](https://github.com/nanoporetech/Template/raw/master/ONT_logo_deprecated.png "This Oxford Nanopore Technologiesrepo is deprecated")
+
+We have a new resource that largely replaces the functionality of this project! See our new repository here: https://github.com/nanoporetech/minknow_api
+
+The new API project has a pypi module, and offers improved API and tools with minknow 4.x compatibility.
+
+This repository is now unsupported and we do not recommend its use. Please contact Oxford Nanopore: support@nanoporetech.com for help with your application if it is not possible to upgrade to our new resources, or we are missing key features.
+
 
 MinKNOW LIMS Interface
 ======================
